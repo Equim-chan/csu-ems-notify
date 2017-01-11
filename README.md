@@ -1,4 +1,5 @@
 # 中南教务邮件提醒 #
+[![SATA](https://img.shields.io/badge/license-SATA-blue.svg)](https://github.com/Equim-chan/csu-ems-notify/blob/master/LICENSE)
 
 一个定时查询中南大学教务管理系统并发送邮件提醒工具，基于[中南教务API](https://github.com/Equim-chan/csu-ems-api)。
 
@@ -96,4 +97,4 @@ $ node notify.js -h
 * 详见[package.json](https://github.com/Equim-chan/csu-ems-notify/blob/master/package.json#L12)
 
 ## Lisence ##
-* 本项目使用[MIT](https://github.com/Equim-chan/csu-ems-notify/blob/master/LICENSE)授权。
+* 本项目使用[SATA协议](https://github.com/Equim-chan/csu-ems-notify/blob/master/LICENSE)授权。
