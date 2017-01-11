@@ -1,10 +1,11 @@
-# 新成绩提醒 #
+# 中南教务邮件提醒 #
 
 一个定时查询中南大学教务管理系统并发送邮件提醒工具，基于[中南教务API](https://github.com/Equim-chan/csu-ems-api)。
 
 ## Features ##
 
 * 以一定的时间间隔获取教务发布的考试成绩，如果有新的成绩发布，就会立即发一封邮件(可选是否包含成绩详情)到指定邮箱
+* _(欢迎发起pull req提交更多features)_
 
 ## Setup ##
 
@@ -92,7 +93,7 @@ $ node notify.js -h
 ```
 
 ## Dependencies ##
-* 详见[package.json](https://github.com/Equim-chan/csu-ems-notify/blob/master/package.json#L17)
+* 详见[package.json](https://github.com/Equim-chan/csu-ems-notify/blob/master/package.json#L12)
 
 ## Lisence ##
 * 本项目使用[MIT](https://github.com/Equim-chan/csu-ems-notify/blob/master/LICENSE)授权。
