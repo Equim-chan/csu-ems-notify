@@ -97,4 +97,4 @@ $ node notify.js -h
 * 详见[package.json](https://github.com/Equim-chan/csu-ems-notify/blob/master/package.json#L12)
 
 ## Lisence ##
-* 本项目使用[SATA协议](https://github.com/Equim-chan/csu-ems-notify/blob/master/LICENSE)授权。
+* 本项目使用[The Star And Thank Author License](https://github.com/Equim-chan/csu-ems-notify/blob/master/LICENSE)授权。
