@@ -13,12 +13,14 @@
 $ git clone https://github.com/Equim-chan/csu-ems-notify.git
 $ cd csu-ems-notify
 $ npm install
-$ vim config.json
+$ vim config.json      # 填写config.json
 ```
 运行前__一定一定要先填写好config.json__，尤其是标注__请填写__的那些（属于因人而异的内容），说明如下：
 ```JavaScript
 {
-    // 【请填写】一定要先确认下这个，这是csu-ems-api的URL。如果是用默认配置在本地部署的那么就是http://localhost:2333。关于中南教务API，详见https://github.com/Equim-chan/csu-ems-api
+    // 【请填写】一定要先确认下这个，这是csu-ems-api的URL。
+    // 如果是用默认配置在本地部署的那么就是http://localhost:2333。
+    // 关于中南教务API，详见https://github.com/Equim-chan/csu-ems-api
     "api-link": "http://localhost:2333",
 
     // 查询间隔，单位为分钟
@@ -43,7 +45,7 @@ $ vim config.json
     },
 
     "sender-options": {
-        // 【请填写】，发件邮箱的SMTP地址，如smtp.gmail.com
+        // 【请填写】发件邮箱的SMTP地址，如smtp.gmail.com
         "host": "",
 
         // 端口号
@@ -52,7 +54,7 @@ $ vim config.json
         // 是否启用SSL
         "secure": false,
 
-        // 【请填写】，发件邮箱的账号与密码
+        // 【请填写】发件邮箱的账号与密码
         "auth": {
             "user": "",
             "pass": ""
@@ -70,13 +72,18 @@ $ vim config.json
     }
 }
 ```
-配置完config.json之后，用pm2部署程序。如果中南教务API也是在本地上部署的话，请先部署中南教务API，方法：
+配置完config.json之后，用pm2部署程序。如果中南教务API也是在本地上部署的话，请先部署中南教务API，方法（假设你在中南教务API的目录下）：
 ```shell
-$ sudo pm2 start -i 0 --name "csuapi" --watch true notify.js
+$ sudo pm2 start -i 0 --name "csuapi" --watch true app.js
 ```
 完成所有配置，并确认中南教务API可用后，部署此项目：
 ```shell
 $ sudo pm2 start -i 0 --name "csunotify" --watch true notify.js
+```
+撤销部署：
+```shell
+$ sudo pm2 stop csunotify
+$ sudo pm2 delete csunotify
 ```
 
 ### 获取帮助 ###
