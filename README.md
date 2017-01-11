@@ -15,10 +15,10 @@ $ cd csu-ems-notify
 $ npm install
 $ vim config.json
 ```
-运行前_一定一定要先填写好config.json_，说明如下：
+运行前__一定一定要先填写好config.json__，尤其是标注__请填写__的那些（属于因人而异的内容），说明如下：
 ```JavaScript
 {
-    // csu-ems-api的URL，关于中南教务API，详见https://github.com/Equim-chan/csu-ems-api
+    // 【请填写】一定要先确认下这个，这是csu-ems-api的URL。如果是用默认配置在本地部署的那么就是http://localhost:2333。关于中南教务API，详见https://github.com/Equim-chan/csu-ems-api
     "api-link": "http://localhost:2333",
 
     // 查询间隔，单位为分钟
@@ -27,7 +27,7 @@ $ vim config.json
     // 查询时段，必须严格按照格式"HH:mm-HH:mm"，如指定为空，则全天都会查询。注意，在这个时段只是不查询，程序不会退出。
     "period": "06:00-23:00",
 
-    // 查询至几次为止，如不指定或设为0，则会一直查询下去
+    // 查询至几次为止，如不指定或设为0，就会一直查询下去
     "limit": "",
 
     // 如设为false，则在出现新成绩并发送邮件之后就会立即停止程序
@@ -36,29 +36,33 @@ $ vim config.json
     // 是否在邮件中显示成绩详情，心理承受能力差的请填false(逃
     "details": true,
 
-    // 必填，要查询的用户的账号密码
+    // 【请填写】要查询的用户的账号密码
     "account": {
         "id": "",
         "password": ""
     },
 
     "sender-options": {
-        // 必填，发件邮箱的SMTP地址，如smtp.gmail.com
+        // 【请填写】，发件邮箱的SMTP地址，如smtp.gmail.com
         "host": "",
+
+        // 端口号
         "port": 25,
+
+        // 是否启用SSL
         "secure": false,
 
-        // 必填，发件邮箱的账号与密码
+        // 【请填写】，发件邮箱的账号与密码
         "auth": {
             "user": "",
             "pass": ""
         }
     },
     "mail-options": {
-        // 必填，发件人信息，格式为"\"发件人名字\" <邮箱地址>"
+        // 【请填写】发件人信息，格式为"\"发件人名字\" <邮箱地址>"
         "from": "\"新成绩提醒\" <>",
 
-        // 必填，收件人的邮箱地址
+        // 【请填写】收件人的邮箱地址
         "to": "",
 
         // 邮件标题
