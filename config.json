@@ -1,0 +1,26 @@
+{
+    "api-link": "http://localhost:2333",
+    "interval": "10",
+    "period": "06:00-23:00",
+    "limit": "",
+    "endless": true,
+    "details": true,
+    "account": {
+        "id": "",
+        "password": ""
+    },
+    "sender-options": {
+        "host": "",
+        "port": 25,
+        "secure": false,
+        "auth": {
+            "user": "",
+            "pass": ""
+        }
+    },
+    "mail-options": {
+        "from": "\"新成绩提醒\" <>",
+        "to": "",
+        "subject": "新成绩出来了！"
+    }
+}
