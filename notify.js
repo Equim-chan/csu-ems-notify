@@ -86,7 +86,7 @@ const task = () => {
         }
     }
     console.log((timeStamp() + 'Fetching for the ').cyan + getOrdinal(++count).yellow + ' time.'.cyan);
-    // 这种退出方法暂时还没测试过，下面的回调会不会对其造成影响
+    // 这种退出方法暂时还没测试过，不知道下面的回调会不会对其造成影响
     if (limit && count == limit) {
         clearInterval(code);
     }
@@ -128,21 +128,18 @@ const task = () => {
                 mailOptions.to.yellow);
 
             if (details) {
-                var news = {};
-                // 遍历一遍，找出新出成绩的科目，注意可能有很多个
-                for (let key in fresh.grades) {
-                    if (!(key in last.grades))
-                        news[key] = fresh.grades[key];
-                }
-
                 mailOptions.html = '<h2>以下为新出成绩的列表：</h2><br>';
-                for (let key in news) {
-                    // 这里暂不考虑NaN的情况
-                    if (parseInt(news[key]) < 60)
-                        mailOptions.html += '<span style="color:red;font-weight:bold">[挂]</span>';
-                    else
-                        mailOptions.html += '<span style="color:green;font-weight:bold">[过]</span>';
-                    mailOptions.html += ' <u>' + key + '</u> 分数为 <u>' + news[key] + '</u><br>';
+                for (let key in fresh.grades) {
+                    // 找新增的科目
+                    if (!(key in last.grades)) {
+                        // 确认是否为挂科的
+                        if (key in fresh.failed) {
+                            mailOptions.html += '<span style="color:red;font-weight:bold">[挂]</span>';
+                        } else {
+                            mailOptions.html += '<span style="color:green;font-weight:bold">[过]</span>';
+                        }
+                        mailOptions.html += ' <u>' + key + '</u> 分数为 <u>' + fresh.grades[key] + '</u><br>';
+                    }
                 }
                 mailOptions.html += '<br>---------------------------------------------------------------------<br>';
             }
