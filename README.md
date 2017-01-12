@@ -3,6 +3,10 @@
 
 一个定时查询中南大学教务管理系统并发送邮件提醒工具，基于[中南教务API](https://github.com/Equim-chan/csu-ems-api)。
 
+## TODO ##
+
+* 写测试单元
+
 ## Features ##
 
 * 以一定的时间间隔获取教务发布的考试成绩，如果有新的成绩发布，就会立即发一封邮件(可选是否包含成绩详情)到指定邮箱
@@ -40,7 +44,7 @@ $ vim config.json      # 填写config.json
     // 是否在邮件中显示成绩详情，心理承受能力差的请填false(逃
     "details": true,
 
-    // 【请填写】要查询的用户的账号密码
+    // 【请填写】要查询的用户的账号密码，不需要URL转义
     "account": {
         "id": "",
         "password": ""
@@ -76,11 +80,11 @@ $ vim config.json      # 填写config.json
 ```
 配置完config.json之后，用pm2部署程序。如果中南教务API也是在本地上部署的话，请先部署中南教务API，方法（假设你在中南教务API的目录下）：
 ```shell
-$ sudo pm2 start -i 0 --name "csuapi" --watch true app.js
+$ sudo pm2 start -i 0 -n "csuapi" --watch true app.js
 ```
 完成所有配置，并确认中南教务API可用后，部署此项目：
 ```shell
-$ sudo pm2 start -i 0 --name "csunotify" --watch true notify.js
+$ sudo pm2 start -i 0 -n "csunotify" --watch true notify.js
 ```
 撤销部署：
 ```shell
@@ -96,5 +100,5 @@ $ node notify.js -h
 ## Dependencies ##
 * 详见[package.json](https://github.com/Equim-chan/csu-ems-notify/blob/master/package.json#L12)
 
-## Lisence ##
+## License ##
 * 本项目使用[The Star And Thank Author License](https://github.com/Equim-chan/csu-ems-notify/blob/master/LICENSE)授权。
