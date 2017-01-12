@@ -78,18 +78,23 @@ $ vim config.json      # 填写config.json
     }
 }
 ```
+如果要自定义config.json的路径，可以使用参数`-c|--config [path]`  
 配置完config.json之后，用pm2部署程序。如果中南教务API也是在本地上部署的话，请先部署中南教务API，方法（假设你在中南教务API的目录下）：
 ```shell
-$ sudo pm2 start -i 0 -n "csuapi" --watch true app.js
+$ pm2 start -i 0 -n "csuapi" --watch true app.js
 ```
 完成所有配置，并确认中南教务API可用后，部署此项目：
 ```shell
-$ sudo pm2 start -i 0 -n "csunotify" --watch true notify.js
+$ pm2 start -i 0 -n "csunotify" --watch true notify.js
+```
+查看日志：
+```shell
+$ pm2 logs csunotify
 ```
 撤销部署：
 ```shell
-$ sudo pm2 stop csunotify
-$ sudo pm2 delete csunotify
+$ pm2 stop csunotify
+$ pm2 delete csunotify
 ```
 
 ### 获取帮助 ###

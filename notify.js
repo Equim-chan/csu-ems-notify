@@ -10,13 +10,12 @@ var superagent = require('superagent'),
     nodemailer = require('nodemailer'),
     colors = require('colors'),
     program = require('commander'),
-    encodeUrl = require('encodeurl'),
-    config = require('./config'),
     Date = require('./lib/Date.js');
 
 program
     .option('-h, --help')
     .option('-v, --version')
+    .option('-c, --config [path]')
     .parse(process.argv);
 
 if (!program.help || !program.version) {
@@ -24,14 +23,15 @@ if (!program.help || !program.version) {
     console.log(('by Equim').rainbow);
     if (!program.help) {
         console.log('Preparation:');
-        console.log('  You ' + 'have to'.red + 'set the config.json before running it.');
+        console.log('  You ' + 'have to'.red + ' set the config.json before running it.');
         console.log('\nUsage:');
-        console.log('  npm start');
+        console.log('  npm start [-- <options...>]');
         console.log('\nOptions:');
         console.log('  -h, --help              print this message and exit.');
         console.log('  -v, --version           print the version and exit.');
+        console.log('  -c, --config [path]     specify the config file.');
         console.log('\nExamples:');
-        console.log('  $ sudo sudo pm2 start -i 0 --name "csunotify" notify.js    # Using pm2 as a daemon to deploy');
+        console.log('  $ pm2 start -i 0 -n "csunotify" notify.js -- -c ~/myconfig.json    # Using pm2 as a daemon to deploy');
     }
     process.exit(0);
 }
@@ -42,6 +42,8 @@ const timeStamp = () => new Date().format('[MM-dd hh:mm:ss] '),
           let v = n % 100;
           return n + (s[(v - 20) % 10] || s[v] || s[0]);
       },
+      // 导入config
+      config = program.config ? require(program.config) : require('./config'),
       // API链接
       api = config['api-link'],
       // 查询间隔
@@ -58,10 +60,7 @@ const timeStamp = () => new Date().format('[MM-dd hh:mm:ss] '),
       // 邮件中是否包含详情
       details = config.details,
       // 查询的账号
-      account = {
-        id: encodeUrl(config.account.id),
-        password: encodeUrl(config.account.password),
-      };
+      account = config.account;
       
     // 发件人信息
 var transporter = nodemailer.createTransport(config['sender-options']),
@@ -94,7 +93,9 @@ const task = () => {
     if (limit && count == limit) {
         clearInterval(code);
     }
-    superagent.get(api + '/grades/?id=' + account.id + '&pwd=' + account.password)
+
+    superagent.get(api + '/grades')
+        .query({ id: account.id, pwd: account.password })
         .end(function (err, res) {
             // 无法使用API
             if (err) {
