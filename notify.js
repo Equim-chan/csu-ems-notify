@@ -10,6 +10,7 @@ var superagent = require('superagent'),
     nodemailer = require('nodemailer'),
     colors = require('colors'),
     program = require('commander'),
+    encodeUrl = require('encodeurl'),
     config = require('./config'),
     Date = require('./lib/Date.js');
 
@@ -57,7 +58,10 @@ const timeStamp = () => new Date().format('[MM-dd hh:mm:ss] '),
       // 邮件中是否包含详情
       details = config.details,
       // 查询的账号
-      account = config.account;
+      account = {
+        id: encodeUrl(config.account.id),
+        password: encodeUrl(config.account.password),
+      };
       
     // 发件人信息
 var transporter = nodemailer.createTransport(config['sender-options']),
