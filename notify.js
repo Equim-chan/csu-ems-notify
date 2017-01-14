@@ -50,13 +50,15 @@ const timeStamp  = () => new Date().format('[MM-dd hh:mm:ss] '),
       // (boolean) endless  -> 无尽模式(?
       // (boolean) details  -> 邮件中是否包含详情
       // (object)  account  -> 查询的账号
-      config   = program.config ? require(program.config) : require('./config'),
+      config   = require(program.config || './config'),
       api      = config['api-link'],
       interval = config.interval,
       period   = config.period && {
           start: parseInt(config.period.substring(0, 2)) * 60 + parseInt(config.period.substring(3, 5)),
           end: parseInt(config.period.substring(6, 8)) * 60 + parseInt(config.period.substring(9, 11)),
-          inPeriod(minute) {
+          inPeriod() {
+              let now = new Date();
+              let minute = now.getHours() * 60 + now.getMinutes();
               // 这段应该能优化一下的
               if (period.start > period.end) {
                   if (minute < period.start && minute > period.end) {
@@ -87,11 +89,8 @@ var transporter = nodemailer.createTransport(config['sender-options']),
     code;
 
 const task = () => {
-    if (period) {
-        let now = new Date();
-        let minute = now.getHours() * 60 + now.getMinutes();
-        if(!period.inPeriod(minute))
-            return;
+    if (period && !period.inPeriod()) {
+        return;
     }
     console.log((timeStamp() + 'Fetching for the ').cyan + getOrdinal(++count).yellow + ' time.'.cyan);
     // 这种退出方法暂时还没测试过，不知道下面的回调会不会对其造成影响
