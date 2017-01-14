@@ -1,16 +1,15 @@
-- [中南教务邮件提醒](#)
-    - [TODO](#)
-    - [Features](#)
-    - [Setup](#)
-        - [pm2稳定部署](#)
-        - [获取帮助](#)
-    - [Dependencies](#)
-    - [License](#)
-
 # 中南教务邮件提醒 #
 [![SATA](https://img.shields.io/badge/license-SATA-blue.svg)](https://github.com/Equim-chan/csu-ems-notify/blob/master/LICENSE)
 
 一个定时查询中南大学教务管理系统并发送邮件提醒工具，基于[中南教务API](https://github.com/Equim-chan/csu-ems-api)。
+
+- [TODO](#TODO)
+- [Features](#Features)
+- [Setup](#Setup)
+    - [pm2稳定部署](#pm2稳定部署)
+    - [获取帮助](#获取帮助)
+- [Dependencies](#Dependencies)
+- [License](#License)
 
 ## TODO ##
 
