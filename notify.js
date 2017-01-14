@@ -1,16 +1,16 @@
 /* TODO
  * 完善异常处理
  * 检查配置文件是否完整
- * 增加次数和时间底限，到某个时间、或者重复某次之后结束
+ * 增加对于补考更新成绩的支持
  */
 
-"use strict";
+'use strict';
 
 var superagent = require('superagent'),
     nodemailer = require('nodemailer'),
-    colors = require('colors'),
-    program = require('commander'),
-    Date = require('./lib/Date.js');
+    colors     = require('colors'),
+    program    = require('commander'),
+    Date       = require('./lib/Date.js');
 
 program
     .option('-h, --help')
@@ -36,57 +36,62 @@ if (!program.help || !program.version) {
     process.exit(0);
 }
 
-const timeStamp = () => new Date().format('[MM-dd hh:mm:ss] '),
+const timeStamp  = () => new Date().format('[MM-dd hh:mm:ss] '),
       getOrdinal = (n) => {
           const s = ["th", "st", "nd", "rd"];
           let v = n % 100;
           return n + (s[(v - 20) % 10] || s[v] || s[0]);
       },
-      // 导入config
-      config = program.config ? require(program.config) : require('./config'),
-      // API链接
-      api = config['api-link'],
-      // 查询间隔
+      // (object)  config   -> 导入config
+      // (string)  api      -> API链接
+      // (number)  interval -> 查询间隔
+      // (object)  period   -> 查询时段
+      // (number)  limit    -> 查询次数
+      // (boolean) endless  -> 无尽模式(?
+      // (boolean) details  -> 邮件中是否包含详情
+      // (object)  account  -> 查询的账号
+      config   = program.config ? require(program.config) : require('./config'),
+      api      = config['api-link'],
       interval = config.interval,
-      // 查询时段
-      period = config.period && {
+      period   = config.period && {
           start: parseInt(config.period.substring(0, 2)) * 60 + parseInt(config.period.substring(3, 5)),
           end: parseInt(config.period.substring(6, 8)) * 60 + parseInt(config.period.substring(9, 11)),
+          inPeriod(minute) {
+              // 这段应该能优化一下的
+              if (period.start > period.end) {
+                  if (minute < period.start && minute > period.end) {
+                      return false;
+                  }
+              } else {
+                  if (minute < period.start || minute > period.end) {
+                      return false;
+                  }
+              }
+              return true;
+          }
       },
-      // 查询次数
-      limit = config.limit,
-      // 无尽模式(?
-      endless = config.endless,
-      // 邮件中是否包含详情
-      details = config.details,
-      // 查询的账号
-      account = config.account;
+      limit    = config.limit,
+      endless  = config.endless,
+      details  = config.details,
+      account  = config.account;
       
-    // 发件人信息
+    // (object) transporter -> 发件人信息
+    // (object) mailOptions -> 邮件信息
+    // (object) last        -> 上一次查询的结果
+    // (number) count       -> 当前查询次数
+    // (object) code        -> 用于停止setInterval
 var transporter = nodemailer.createTransport(config['sender-options']),
-    // 邮件信息
     mailOptions = config['mail-options'],
-    // 上一次查询的结果
     last,
-    // 当前查询次数
     count = 0,
-    // 用于停止setInterval
     code;
 
 const task = () => {
     if (period) {
         let now = new Date();
         let minute = now.getHours() * 60 + now.getMinutes();
-        // 这段应该能优化一下的
-        if (period.start > period.end) {
-            if (minute < period.start && minute > period.end) {
-                return;
-            }
-        } else {
-            if (minute < period.start || minute > period.end) {
-                return;
-            }
-        }
+        if(!period.inPeriod(minute))
+            return;
     }
     console.log((timeStamp() + 'Fetching for the ').cyan + getOrdinal(++count).yellow + ' time.'.cyan);
     // 这种退出方法暂时还没测试过，不知道下面的回调会不会对其造成影响
@@ -114,6 +119,7 @@ const task = () => {
             last = last || fresh;
 
             // 比较有成绩科目的个数
+            // TODO: 增加对于补考更新成绩的支持
             if (fresh['subject-count'] <= last['subject-count']) {
                 console.log(timeStamp() + 'Found no new grades.');
                 return;
