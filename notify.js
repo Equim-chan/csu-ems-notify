@@ -31,7 +31,7 @@ if (!program.help || !program.version) {
         console.log('  -v, --version           print the version and exit.');
         console.log('  -c, --config [path]     specify the config file.');
         console.log('\nExamples:');
-        console.log('  $ pm2 start -i 0 -n "csunotify" notify.js -- -c ~/myconfig.json    # Using pm2 as a daemon to deploy');
+        console.log('  $ pm2 start -i 0 -n "csunotify" notify.js -- -c ~/myconfig    # Using pm2 as a daemon to deploy');
     }
     process.exit(0);
 }
@@ -70,10 +70,10 @@ const timeStamp  = () => new Date().format('[MM-dd hh:mm:ss] '),
               return true;
           }
       },
-      limit    = config.limit,
-      endless  = config.endless,
-      details  = config.details,
-      account  = config.account;
+      limit   = config.limit,
+      endless = config.endless,
+      details = config.details,
+      account = config.account;
       
     // (object) transporter -> 发件人信息
     // (object) mailOptions -> 邮件信息
@@ -99,7 +99,8 @@ const task = () => {
         clearInterval(code);
     }
 
-    superagent.get(api + '/grades')
+    superagent
+        .get(api + '/grades')
         .query({ id: account.id, pwd: account.password })
         .end(function (err, res) {
             // 无法使用API
