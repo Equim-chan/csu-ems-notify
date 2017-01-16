@@ -94,7 +94,7 @@ const task = () => {
     }
     console.log((timeStamp() + 'Fetching for the ').cyan + getOrdinal(++count).yellow + ' time.'.cyan);
     // 这种退出方法暂时还没测试过，不知道下面的回调会不会对其造成影响
-    if (limit && count == limit) {
+    if (limit && count === limit) {
         clearInterval(code);
     }
 
@@ -154,9 +154,14 @@ const task = () => {
                 }
                 mailOptions.html += '<br>---------------------------------------------------------------------<br>';
             }
-            mailOptions.html += '详情可前往<a href="http://csujwc.its.csu.edu.cn/">中南大学本科教务管理系统</a>进行查询<br>';
-            mailOptions.html += '由' + require('os').hostname() + '检测于' + new Date().format('yyyy年MM月dd日hh时mm分ss秒SSS毫秒<br>');
-            mailOptions.html += '<a href="https://github.com/Equim-chan/"><img src="https://s26.postimg.org/dyg3i93zt/signature_white.jpg" alt="Equim"/></a>';
+            mailOptions.html +=
+                '详情可前往' + 
+                '<a href="http://csujwc.its.csu.edu.cn/">中南大学本科教务管理系统</a>进行查询<br>' +
+                '由' + require('os').hostname() + '检测于' +
+                new Date().format('yyyy年MM月dd日hh时mm分ss秒SSS毫秒<br>') +
+                '<a href="https://github.com/Equim-chan/">' +
+                    '<img src="https://s26.postimg.org/6778clcah/signature_white_cut.jpg" alt="Equim"/>' +
+                '</a>';
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                     console.log((timeStamp() + 'Failed to send the mail.\n' + error.stack).red);
@@ -169,6 +174,7 @@ const task = () => {
 };
 
 code = setInterval(task, 1000 * 60 * interval);
+
 console.log(timeStamp().green +
     'The server has started monitoring, with an interval of '.green +
     interval.yellow +
