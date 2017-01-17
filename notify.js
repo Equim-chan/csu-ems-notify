@@ -203,7 +203,7 @@ const task = () => {
         });
 };
 
-//code = setInterval(task, 1000 * 60 * interval);
+code = setInterval(task, 1000 * 60 * interval);
 
 console.log(timeStamp().green +
     'The monitor service has been launched, with an interval of '.green +
@@ -211,11 +211,4 @@ console.log(timeStamp().green +
     ' mins, in period: '.green +
     (config.period || '24 hours').yellow);
 // 启动后立即查询一次
-//task();
-transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-        console.log((timeStamp() + 'Failed to send the mail.\n' + error.stack).red);
-        return;
-    }
-    console.log((timeStamp() + 'The notifiction mail was sent: ' + info.response).green);
-});
+task();
