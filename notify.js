@@ -19,7 +19,7 @@ program
     .parse(process.argv);
 
 if (!program.help || !program.version) {
-    console.log(('CSUEMS Email Notify v1.2.0').rainbow);
+    console.log(('CSUEMS Email Notify v1.3.2').rainbow);
     console.log(('by Equim').rainbow);
     if (!program.help) {
         console.log('Preparation:');
@@ -203,12 +203,19 @@ const task = () => {
         });
 };
 
-code = setInterval(task, 1000 * 60 * interval);
+//code = setInterval(task, 1000 * 60 * interval);
 
 console.log(timeStamp().green +
-    'The server has started monitoring, with an interval of '.green +
+    'The monitor service has been launched, with an interval of '.green +
     interval.yellow +
     ' mins, in period: '.green +
     (config.period || '24 hours').yellow);
 // 启动后立即查询一次
-task();
+//task();
+transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+        console.log((timeStamp() + 'Failed to send the mail.\n' + error.stack).red);
+        return;
+    }
+    console.log((timeStamp() + 'The notifiction mail was sent: ' + info.response).green);
+});

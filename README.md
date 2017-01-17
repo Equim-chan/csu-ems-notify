@@ -3,17 +3,12 @@
 
 一个定时查询中南大学教务管理系统并发送邮件提醒工具，基于[中南教务API](https://github.com/Equim-chan/csu-ems-api)。
 
-- [TODO](#todo)
 - [Features](#features)
 - [Setup](#setup)
     - [pm2稳定部署](#pm2稳定部署)
     - [获取帮助](#获取帮助)
 - [Dependencies](#dependencies)
 - [License](#license)
-
-## TODO ##
-
-* 写测试单元
 
 ## Features ##
 
@@ -92,6 +87,12 @@ $ vim config.json      # 填写config.json
 }
 ```
 如果要自定义config.json的路径，可以使用参数`-c|--config [path]`  
+在这一步可以运行`npm test`测试一下自己的参数是否正确，如：  
+```shell
+$ npm test -- -c ./myconfig
+```
+如果配置正确，目标邮箱就能收到一封邮件。如果没收到，则检查一下是否在回收站里，并将它从“垃圾邮件”中移走，然后再试。  
+(注：这不是严格的单元测试，~~因为太麻烦~~……)  
 配置完config.json之后，用pm2部署程序。如果中南教务API也是在本地上部署的话，请先部署中南教务API，方法（假设你在中南教务API的目录下）：
 ```shell
 $ pm2 start -i 0 -n "csuapi" --watch true app.js
