@@ -2,6 +2,7 @@
     "api-link": "http://localhost:2333",
     "interval": "10",
     "period": "06:00-23:00",
+    "make-up": false,
     "limit": "",
     "endless": true,
     "details": true,

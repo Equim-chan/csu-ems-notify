@@ -10,6 +10,7 @@ var superagent = require('superagent'),
     nodemailer = require('nodemailer'),
     colors     = require('colors'),
     program    = require('commander'),
+    _          = require('underscore'),
     Date       = require('./lib/Date.js');
 
 program
@@ -46,6 +47,7 @@ const timeStamp  = () => new Date().format('[MM-dd hh:mm:ss] '),
       // (string)  api      -> API链接
       // (number)  interval -> 查询间隔
       // (object)  period   -> 查询时段
+      // (boolean) makeUp   -> 是否考虑补考
       // (number)  limit    -> 查询次数
       // (boolean) endless  -> 无尽模式(?
       // (boolean) details  -> 邮件中是否包含详情
@@ -72,6 +74,7 @@ const timeStamp  = () => new Date().format('[MM-dd hh:mm:ss] '),
               return true;
           }
       },
+      makeUp  = config['make-up'],
       limit   = config.limit,
       endless = config.endless,
       details = config.details,
@@ -94,7 +97,7 @@ const task = () => {
     }
     console.log((timeStamp() + 'Fetching for the ').cyan + getOrdinal(++count).yellow + ' time.'.cyan);
     // 这种退出方法暂时还没测试过，不知道下面的回调会不会对其造成影响
-    if (limit && count === limit) {
+    if (limit && count == limit) {
         clearInterval(code);
     }
 
@@ -119,10 +122,12 @@ const task = () => {
             last = last || fresh;
 
             // 比较有成绩科目的个数
-            // TODO: 增加对于补考更新成绩的支持
+            // 注意：对于补考更新成绩的支持仅限于补考成绩高于初考成绩的情况
             if (fresh['subject-count'] <= last['subject-count']) {
-                console.log(timeStamp() + 'Found no new grades.');
-                return;
+                if (!makeUp || _.isEqual(fresh, last)) {
+                    console.log(timeStamp() + 'Found no new grades.');
+                    return;
+                }
             }
 
             ////////////////////////////////
@@ -149,7 +154,7 @@ const task = () => {
                         } else {
                             mailOptions.html += '<span style="color:green;font-weight:bold">[过]</span>';
                         }
-                        mailOptions.html += ' <u>' + key + '</u> 分数为 <u>' + fresh.grades[key] + '</u><br>';
+                        mailOptions.html += ' <u>' + key + '</u> 分数为 <u>' + fresh.grades[key].overall + '</u><br>';
                     }
                 }
                 mailOptions.html += '<br>---------------------------------------------------------------------<br>';
