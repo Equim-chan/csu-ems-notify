@@ -1,7 +1,5 @@
 /* TODO
  * 完善异常处理
- * 检查配置文件是否完整
- * 增加对于补考更新成绩的支持
  */
 
 'use strict';
@@ -20,7 +18,7 @@ program
     .parse(process.argv);
 
 if (!program.help || !program.version) {
-    console.log(('CSUEMS Email Notify v1.0.0').rainbow);
+    console.log(('CSUEMS Email Notify v1.2.0').rainbow);
     console.log(('by Equim').rainbow);
     if (!program.help) {
         console.log('Preparation:');
@@ -132,34 +130,36 @@ const task = () => {
 
             ////////////////////////////////
             // 有新成绩
+            //
+
+            let newCount = 0;
 
             if (!endless) {
                 clearInterval(code);
             }
 
-            console.log(timeStamp().green +
-                'Found '.green +
-                (fresh['subject-count'] - last['subject-count']).toString().yellow +
-                ' new grades! Now sending the mail to '.green + 
-                mailOptions.to.yellow);
+            mailOptions.html = details ? '<h2>以下为新出成绩的列表：</h2><br>' : '';
 
-            if (details) {
-                mailOptions.html = '<h2>以下为新出成绩的列表：</h2><br>';
-                for (let key in fresh.grades) {
-                    // 找新增的科目
-                    if (!(key in last.grades)) {
-                        // 确认是否为挂科的
-                        if (key in fresh.failed) {
-                            mailOptions.html += '<span style="color:red;font-weight:bold">[挂]</span>';
-                        } else {
-                            mailOptions.html += '<span style="color:green;font-weight:bold">[过]</span>';
-                        }
-                        mailOptions.html += ' <u>' + key + '</u> 分数为 <u>' + fresh.grades[key].overall + '</u><br>';
-                    }
+            // 确定个数
+            for (let key in fresh.grades) {
+                // 找新增或有变动的科目
+                if (!(key in last.grades) || (makeUp && last.grades[key].overall != fresh.grades[key].overall)) {
+                    newCount++;
+                    mailOptions.html +=
+                        details ?
+                        (
+                            (
+                                (key in fresh.failed) ?
+                                    '<span style="color:red;font-weight:bold">[挂]</span>' :
+                                    '<span style="color:green;font-weight:bold">[过]</span>'
+                            ) +
+                            ' <u>' + key + '</u> 分数为 <u>' + fresh.grades[key].overall + '</u><br>'
+                        ) : '';
                 }
-                mailOptions.html += '<br>---------------------------------------------------------------------<br>';
             }
+
             mailOptions.html +=
+                (details ? '<br>---------------------------------------------------------------------<br>' : '') + 
                 '详情可前往' + 
                 '<a href="http://csujwc.its.csu.edu.cn/">中南大学本科教务管理系统</a>进行查询<br>' +
                 '由' + require('os').hostname() + '检测于' +
@@ -167,6 +167,13 @@ const task = () => {
                 '<a href="https://github.com/Equim-chan/">' +
                     '<img src="https://s26.postimg.org/6778clcah/signature_white_cut.jpg" alt="Equim"/>' +
                 '</a>';
+
+            console.log(timeStamp().green +
+                'Found '.green +
+                newCount.toString().yellow +
+                ' new grades! Now sending the mail to '.green + 
+                mailOptions.to.yellow);
+
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                     console.log((timeStamp() + 'Failed to send the mail.\n' + error.stack).red);

@@ -3,13 +3,13 @@
 
 一个定时查询中南大学教务管理系统并发送邮件提醒工具，基于[中南教务API](https://github.com/Equim-chan/csu-ems-api)。
 
-- [TODO](#TODO)
-- [Features](#Features)
-- [Setup](#Setup)
+- [TODO](#todo)
+- [Features](#features)
+- [Setup](#setup)
     - [pm2稳定部署](#pm2稳定部署)
     - [获取帮助](#获取帮助)
-- [Dependencies](#Dependencies)
-- [License](#License)
+- [Dependencies](#dependencies)
+- [License](#license)
 
 ## TODO ##
 
