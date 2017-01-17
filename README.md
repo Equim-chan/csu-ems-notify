@@ -116,7 +116,7 @@ $ node notify.js -h
 ```
 
 ## Dependencies ##
-* 详见[package.json](https://github.com/Equim-chan/csu-ems-notify/blob/master/package.json#L12)
+* 详见[package.json](https://github.com/Equim-chan/csu-ems-notify/blob/master/package.json#L16)
 
 ## License ##
 * 本项目使用[The Star And Thank Author License](https://github.com/Equim-chan/csu-ems-notify/blob/master/LICENSE)授权。

@@ -9,6 +9,7 @@ var superagent = require('superagent'),
     colors     = require('colors'),
     program    = require('commander'),
     _          = require('underscore'),
+    util       = require('util'),
     Date       = require('./lib/Date.js');
 
 program
@@ -138,32 +139,49 @@ const task = () => {
                 clearInterval(code);
             }
 
-            mailOptions.html = details ? '<h2>以下为新出成绩的列表：</h2><br>' : '';
+            mailOptions.html = details ? '<h2 style="font-family:\'Microsoft Yahei\'">以下为新出成绩的列表：</h2><br><ul>' : '';
 
             // 确定个数
             for (let key in fresh.grades) {
                 // 找新增或有变动的科目
                 if (!(key in last.grades) || (makeUp && last.grades[key].overall != fresh.grades[key].overall)) {
                     newCount++;
-                    mailOptions.html +=
-                        details ?
-                        (
+                    if (details) {
+                        let current = fresh.grades[key];
+                        mailOptions.html +=
                             (
                                 (key in fresh.failed) ?
-                                    '<span style="color:red;font-weight:bold">[挂]</span>' :
-                                    '<span style="color:green;font-weight:bold">[过]</span>'
+                                    '<li><span style="color:red;font-weight:bold">[挂]</span>' :
+                                    '<li><span style="color:green;font-weight:bold">[过]</span>'
                             ) +
-                            ' <u>' + key + '</u> 分数为 <u>' + fresh.grades[key].overall + '</u><br>'
-                        ) : '';
+                            ' <u>' + key + '</u> 分数为 <u>' + current.overall + '</u>';
+                        if (!isNaN(current.reg) && !isNaN(current.exam) && !isNaN(current.overall)) {
+                            // 计算平时分、考试分权重
+                            // weight.reg = (overall - exam) / (reg - exam)
+                            // weight.exam = 1 - weight.reg
+                            let regWeight = (current.overall - current.exam) / (current.reg - current.exam),
+                                examWeight = 1 - regWeight;
+                            mailOptions.html += util.format(' (平时成绩%d * %d%% + 期末成绩%d * %d%% = %d)',
+                                current.reg,
+                                //Math.round(regWeight * 10000) / 100,
+                                Math.round(regWeight * 10) * 10,
+                                current.exam,
+                                Math.round(examWeight * 10) * 10,
+                                current.overall
+                            );
+                        }
+                        mailOptions.html += '</li>';
+                    }
                 }
             }
 
             mailOptions.html +=
-                (details ? '<br>---------------------------------------------------------------------<br>' : '') + 
+                (details ? '</ul><br>---------------------------------------------------------------------<br>' : '') + 
                 '详情可前往' + 
                 '<a href="http://csujwc.its.csu.edu.cn/">中南大学本科教务管理系统</a>进行查询<br>' +
                 '由' + require('os').hostname() + '检测于' +
-                new Date().format('yyyy年MM月dd日hh时mm分ss秒SSS毫秒<br>') +
+                new Date().format('yyyy年MM月dd日hh时mm分ss秒SSS毫秒') +
+                '，第' + count + '次检测<br>' +
                 '<a href="https://github.com/Equim-chan/">' +
                     '<img src="https://s26.postimg.org/6778clcah/signature_white_cut.jpg" alt="Equim"/>' +
                 '</a>';

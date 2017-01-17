@@ -7,6 +7,10 @@
     "start": "node notify.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:Equim-chan/csu-ems-notify.git"
+  },
   "author": "Equim",
   "license": "MIT",
   "dependencies": {
