@@ -1,4 +1,5 @@
 # 中南教务邮件提醒 #
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/66ae5c8fce5e4520b2f8f5bf864cc136)](https://www.codacy.com/app/Equim-chan/csu-ems-notify?utm_source=github.com&utm_medium=referral&utm_content=Equim-chan/csu-ems-notify&utm_campaign=badger)
 [![SATA](https://img.shields.io/badge/license-SATA-blue.svg)](https://github.com/Equim-chan/csu-ems-notify/blob/master/LICENSE)
 
 一个定时查询中南大学教务管理系统并发送邮件提醒工具，基于[中南教务API](https://github.com/Equim-chan/csu-ems-api)。
