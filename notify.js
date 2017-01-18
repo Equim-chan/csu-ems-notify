@@ -10,7 +10,7 @@ var superagent = require('superagent'),
     program    = require('commander'),
     _          = require('underscore'),
     util       = require('util'),
-    Date       = require('./lib/Date.js');
+    moment     = require('moment');
 
 program
     .option('-h, --help')
@@ -36,7 +36,7 @@ if (!program.help || !program.version) {
     process.exit(0);
 }
 
-const timeStamp  = () => new Date().format('[MM-dd hh:mm:ss]'),
+const timeStamp = () => moment().format('[[]YY-MM-DD HH:mm:ss[]]'),
       getOrdinal = (n) => {
           const s = ["th", "st", "nd", "rd"];
           let v = n % 100;
@@ -180,7 +180,7 @@ const task = () => {
                 '详情可前往' + 
                 '<a href="http://csujwc.its.csu.edu.cn/">中南大学本科教务管理系统</a>进行查询<br>' +
                 '由' + require('os').hostname() + '检测于' +
-                new Date().format('yyyy年MM月dd日hh时mm分ss秒SSS毫秒') +
+                moment().format('YYYY年M月D日H时m分s秒SSS毫秒') +
                 '，第' + count + '次检测<br>' +
                 '<a href="https://github.com/Equim-chan/">' +
                     '<img src="https://s26.postimg.org/6778clcah/signature_white_cut.jpg" alt="Equim"/>' +
