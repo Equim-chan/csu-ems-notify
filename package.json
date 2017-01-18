@@ -1,6 +1,6 @@
 {
   "name": "csu-ems-notify",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "A tool to send notifiction email when new grades are released, based on csu-ems-api.",
   "main": "notify.js",
   "scripts": {

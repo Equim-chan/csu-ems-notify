@@ -97,7 +97,7 @@ const task = () => {
     console.log(`${timeStamp()} Fetching for the `.cyan +
         getOrdinal(++count).yellow + ' time.'.cyan);
     // 这种退出方法暂时还没测试过，不知道下面的回调会不会对其造成影响
-    if (limit && count == limit) {
+    if (count === limit) {
         clearInterval(code);
     }
 
@@ -145,7 +145,7 @@ const task = () => {
             // 确定个数
             for (let key in fresh.grades) {
                 // 找新增或有变动的科目
-                if (!(key in last.grades) || (makeUp && last.grades[key].overall != fresh.grades[key].overall)) {
+                if (!(key in last.grades) || (makeUp && last.grades[key].overall !== fresh.grades[key].overall)) {
                     newCount++;
                     if (details) {
                         let current = fresh.grades[key];
