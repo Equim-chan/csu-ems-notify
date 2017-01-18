@@ -102,7 +102,7 @@ const task = () => {
     }
 
     superagent
-        .get(api + '/grades')
+        .get(api + '/g')
         .query({ id: account.id, pwd: account.password })
         .end(function (err, res) {
             // 无法使用API
