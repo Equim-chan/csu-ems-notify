@@ -36,7 +36,7 @@ if (!program.help || !program.version) {
     process.exit(0);
 }
 
-const timeStamp  = () => new Date().format('[MM-dd hh:mm:ss] '),
+const timeStamp  = () => new Date().format('[MM-dd hh:mm:ss]'),
       getOrdinal = (n) => {
           const s = ["th", "st", "nd", "rd"];
           let v = n % 100;
@@ -94,7 +94,8 @@ const task = () => {
     if (period && !period.inPeriod()) {
         return;
     }
-    console.log((timeStamp() + 'Fetching for the ').cyan + getOrdinal(++count).yellow + ' time.'.cyan);
+    console.log(`${timeStamp()} Fetching for the `.cyan +
+        getOrdinal(++count).yellow + ' time.'.cyan);
     // 这种退出方法暂时还没测试过，不知道下面的回调会不会对其造成影响
     if (limit && count == limit) {
         clearInterval(code);
@@ -106,14 +107,14 @@ const task = () => {
         .end(function (err, res) {
             // 无法使用API
             if (err) {
-                console.log((timeStamp() + 'Failed to access the API through ' + api + '\n' + err.stack).red);
+                console.log(`${timeStamp()} Failed to access the API through ${api}\n${err.stack}`.red);
                 return;
             }
 
             var fresh = JSON.parse(res.text);
             // 能使用API，但查询失败
             if (fresh.error) {
-                console.log((timeStamp() + 'Failed to query, reason: ' + fresh.error).red);
+                console.log(`${timeStamp()} Failed to query, reason: ${fresh.error}`.red);
                 return;
             }
 
@@ -124,7 +125,7 @@ const task = () => {
             // 注意：对于补考更新成绩的支持仅限于补考成绩高于初考成绩的情况
             if (fresh['subject-count'] <= last['subject-count']) {
                 if (!makeUp || _.isEqual(fresh, last)) {
-                    console.log(timeStamp() + 'Found no new grades.');
+                    console.log(`${timeStamp()} Found no new grades.`);
                     return;
                 }
             }
@@ -149,12 +150,11 @@ const task = () => {
                     if (details) {
                         let current = fresh.grades[key];
                         mailOptions.html +=
-                            (
-                                (key in fresh.failed) ?
-                                    '<li><span style="color:red;font-weight:bold">[挂]</span>' :
-                                    '<li><span style="color:green;font-weight:bold">[过]</span>'
-                            ) +
-                            ' <u>' + key + '</u> 分数为 <u>' + current.overall + '</u>';
+                            `${(key in fresh.failed) ?
+                                '<li><span style="color:red;font-weight:bold">[挂]</span>' :
+                                '<li><span style="color:green;font-weight:bold">[过]</span>'}` +
+                            ` <u> ${key} </u> 分数为 <u> ${current.overall} </u>`;
+
                         if (!isNaN(current.reg) && !isNaN(current.exam) && !isNaN(current.overall)) {
                             // 计算平时分、考试分权重
                             // weight.reg = (overall - exam) / (reg - exam)
@@ -186,18 +186,17 @@ const task = () => {
                     '<img src="https://s26.postimg.org/6778clcah/signature_white_cut.jpg" alt="Equim"/>' +
                 '</a>';
 
-            console.log(timeStamp().green +
-                'Found '.green +
+            console.log(`${timeStamp()} Found `.green +
                 newCount.toString().yellow +
-                ' new grades! Now sending the mail to '.green + 
+                ` new grades! Now sending the mail to `.green + 
                 mailOptions.to.yellow);
 
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
-                    console.log((timeStamp() + 'Failed to send the mail.\n' + error.stack).red);
+                    console.log(`${timeStamp()} Failed to send the mail.\n${error.stack}`.red);
                     return;
                 }
-                console.log((timeStamp() + 'The notifiction mail was sent: ' + info.response).green);
+                console.log(`${timeStamp()} The notifiction mail was sent: ${info.response}`.green);
             });
             last = fresh;
         });
@@ -205,10 +204,8 @@ const task = () => {
 
 code = setInterval(task, 1000 * 60 * interval);
 
-console.log(timeStamp().green +
-    'The monitor service has been launched, with an interval of '.green +
-    interval.yellow +
-    ' mins, in period: '.green +
+console.log(`${timeStamp()} The monitor service has been launched, with an interval of `.green +
+    interval.yellow + ' mins, in period: '.green +
     (config.period || '24 hours').yellow);
 // 启动后立即查询一次
 task();
