@@ -4,7 +4,8 @@
 
 'use strict';
 
-var superagent = require('superagent'),
+const 
+    superagent = require('superagent'),
     nodemailer = require('nodemailer'),
     colors     = require('colors'),
     program    = require('commander'),
@@ -40,41 +41,42 @@ Examples:
     process.exit(0);
 }
 
-const timeStamp = () => moment().format('[[]YY-MM-DD HH:mm:ss[]]'),
-      getOrdinal = (n) => {
-          const s = ["th", "st", "nd", "rd"];
-          let v = n % 100;
-          return n + (s[(v - 20) % 10] || s[v] || s[0]);
-      },
-      // (object)  config   -> 导入config
-      // (string)  api      -> API链接
-      // (number)  interval -> 查询间隔
-      // (object)  period   -> 查询时段
-      // (boolean) makeUp   -> 是否考虑补考
-      // (number)  limit    -> 查询次数
-      // (boolean) endless  -> 无尽模式(?
-      // (boolean) details  -> 邮件中是否包含详情
-      // (object)  account  -> 查询的账号
-      config   = require(program.config || './config'),
-      api      = config['api-link'],
-      interval = config.interval,
-      period   = config.period && {
-          range: config.period
-                     .replace(/:/g, '')
-                     .match(/\d{2,}(?:-|$)/g)
-                     .map((p, i, c) =>
-                         parseInt(p) + (parseInt(c[0]) >= p ? 2400 : 0)),
-          inPeriod() {
-              let now = parseInt(moment().format('hhmm'));
-              return this.range[0] <= now && now <= this.range[1] ||
-                     this.range[0] <= now + 2400 && now + 2400 <= this.range[1];
-          }
-      },
-      makeUp  = config['make-up'],
-      limit   = config.limit,
-      endless = config.endless,
-      details = config.details,
-      account = config.account;
+const
+    timeStamp = () => moment().format('[[]YY-MM-DD HH:mm:ss[]]'),
+    getOrdinal = (n) => {
+        const s = ["th", "st", "nd", "rd"];
+        let v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    },
+    // (object)  config   -> 导入config
+    // (string)  api      -> API链接
+    // (number)  interval -> 查询间隔
+    // (object)  period   -> 查询时段
+    // (boolean) makeUp   -> 是否考虑补考
+    // (number)  limit    -> 查询次数
+    // (boolean) endless  -> 无尽模式(?
+    // (boolean) details  -> 邮件中是否包含详情
+    // (object)  account  -> 查询的账号
+    config   = require(program.config || './config'),
+    api      = config['api-link'],
+    interval = config.interval,
+    period   = config.period && {
+        range: config.period
+                .replace(/:/g, '')
+                .match(/\d{2,}(?:-|$)/g)
+                .map((p, i, c) =>
+                    parseInt(p) + (parseInt(c[0]) >= p ? 2400 : 0)),
+        inPeriod() {
+            let now = parseInt(moment().format('hhmm'));
+            return this.range[0] <= now && now <= this.range[1] ||
+                   this.range[0] <= now + 2400 && now + 2400 <= this.range[1];
+        }
+    },
+    makeUp  = config['make-up'],
+    limit   = config.limit,
+    endless = config.endless,
+    details = config.details,
+    account = config.account;
       
     // (object) transporter -> 发件人信息
     // (object) mailOptions -> 邮件信息
@@ -160,7 +162,6 @@ const task = () => {
                                 examWeight = 1 - regWeight;
                             mailOptions.html += util.format(' (平时成绩%d * %d%% + 期末成绩%d * %d%% = %d)',
                                 current.reg,
-                                //Math.round(regWeight * 10000) / 100,
                                 Math.round(regWeight * 10) * 10,
                                 current.exam,
                                 Math.round(examWeight * 10) * 10,
