@@ -19,20 +19,24 @@ program
     .parse(process.argv);
 
 if (!program.help || !program.version) {
-    console.log(('CSUEMS Email Notify v1.3.2').rainbow);
-    console.log(('by Equim').rainbow);
-    if (!program.help) {
-        console.log('Preparation:');
-        console.log('  You ' + 'have to'.red + ' set the config.json before running it.');
-        console.log('\nUsage:');
-        console.log('  npm start [-- <options...>]');
-        console.log('\nOptions:');
-        console.log('  -h, --help              print this message and exit.');
-        console.log('  -v, --version           print the version and exit.');
-        console.log('  -c, --config [path]     specify the config file.');
-        console.log('\nExamples:');
-        console.log('  $ pm2 start -i 0 -n "csunotify" notify.js -- -c ~/myconfig    # Using pm2 as a daemon to deploy');
-    }
+    console.log(
+`${`CSUEMS Email Notify v${require('./package').version}
+by Equim`.rainbow}${program.help ? '' :
+`
+
+Preparation:
+  You ${'have to'.red} set the config.json before running it.
+
+Usage:
+  npm start [-- <options...>]
+
+Options:
+  -h, --help              print this message and exit.
+  -v, --version           print the version and exit.
+  -c, --config [path]     specify the config file.
+
+Examples:
+  $ pm2 start -i 0 -n "csunotify" notify.js -- -c ~/myconfig    # Using pm2 as a daemon to deploy`}`);
     process.exit(0);
 }
 
@@ -55,22 +59,15 @@ const timeStamp = () => moment().format('[[]YY-MM-DD HH:mm:ss[]]'),
       api      = config['api-link'],
       interval = config.interval,
       period   = config.period && {
-          start: parseInt(config.period.substring(0, 2)) * 60 + parseInt(config.period.substring(3, 5)),
-          end: parseInt(config.period.substring(6, 8)) * 60 + parseInt(config.period.substring(9, 11)),
+          range: config.period
+                     .replace(/:/g, '')
+                     .match(/\d{2,}(?:-|$)/g)
+                     .map((p, i, c) =>
+                         parseInt(p) + (parseInt(c[0]) >= p ? 2400 : 0)),
           inPeriod() {
-              let now = new Date();
-              let minute = now.getHours() * 60 + now.getMinutes();
-              // 这段应该能优化一下的
-              if (period.start > period.end) {
-                  if (minute < period.start && minute > period.end) {
-                      return false;
-                  }
-              } else {
-                  if (minute < period.start || minute > period.end) {
-                      return false;
-                  }
-              }
-              return true;
+              let now = parseInt(moment().format('hhmm'));
+              return this.range[0] <= now && now <= this.range[1] ||
+                     this.range[0] <= now + 2400 && now + 2400 <= this.range[1];
           }
       },
       makeUp  = config['make-up'],
@@ -205,7 +202,7 @@ const task = () => {
 code = setInterval(task, 1000 * 60 * interval);
 
 console.log(`${timeStamp()} The monitor service has been launched, with an interval of `.green +
-    interval.yellow + ' mins, in period: '.green +
+    interval.toString().yellow + ' mins, in period: '.green +
     (config.period || '24 hours').yellow);
 // 启动后立即查询一次
 task();
