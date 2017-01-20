@@ -58,16 +58,15 @@ const
     // (boolean) details  -> 邮件中是否包含详情
     // (object)  account  -> 查询的账号
     config   = require(program.config || './config'),
-    api      = config['api-link'],
+    api      = config['api-host'],
     interval = config.interval,
     period   = config.period && {
         range: config.period
                 .replace(/:/g, '')
-                .match(/\d{2,}(?:-|$)/g)
-                .map((p, i, c) =>
-                    parseInt(p) + (parseInt(c[0]) >= p ? 2400 : 0)),
+                .match(/\d{3,4}/g)
+                .map((p, i, c) => parseInt(p) + (i === 1 && parseInt(c[0]) >= p ? 2400 : 0)),
         inPeriod() {
-            let now = parseInt(moment().format('hhmm'));
+            let now = parseInt(moment().format('Hmm'));
             return this.range[0] <= now && now <= this.range[1] ||
                    this.range[0] <= now + 2400 && now + 2400 <= this.range[1];
         }
@@ -77,17 +76,15 @@ const
     endless = config.endless,
     details = config.details,
     account = config.account;
-      
+
     // (object) transporter -> 发件人信息
     // (object) mailOptions -> 邮件信息
     // (object) last        -> 上一次查询的结果
     // (number) count       -> 当前查询次数
-    // (object) code        -> 用于停止setInterval
 var transporter = nodemailer.createTransport(config['sender-options']),
     mailOptions = config['mail-options'],
     last,
-    count = 0,
-    code;
+    count = 0;
 
 const task = () => {
     if (period && !period.inPeriod()) {
@@ -177,9 +174,8 @@ const task = () => {
                 (details ? '</ul><br>---------------------------------------------------------------------<br>' : '') + 
                 '详情可前往' + 
                 '<a href="http://csujwc.its.csu.edu.cn/">中南大学本科教务管理系统</a>进行查询<br>' +
-                '由' + require('os').hostname() + '检测于' +
-                moment().format('YYYY年M月D日H时m分s秒SSS毫秒') +
-                '，第' + count + '次检测<br>' +
+                `由${require('os').hostname()}检测于${moment().format('YYYY年M月D日H时m分s秒SSS毫秒')}，` +
+                `第${count}次检测<br>` +
                 '<a href="https://github.com/Equim-chan/">' +
                     '<img src="https://s26.postimg.org/6778clcah/signature_white_cut.jpg" alt="Equim"/>' +
                 '</a>';
@@ -200,7 +196,7 @@ const task = () => {
         });
 };
 
-code = setInterval(task, 1000 * 60 * interval);
+const code = setInterval(task, 60000 * interval);
 
 console.log(`${timeStamp()} The monitor service has been launched, with an interval of `.green +
     interval.toString().yellow + ' mins, in period: '.green +

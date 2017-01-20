@@ -30,12 +30,12 @@ $ vim config.json      # 填写config.json
     // 【请填写】一定要先确认下这个，这是csu-ems-api的URL。
     // 如果是用默认配置在本地部署的那么就是http://localhost:2333。
     // 关于中南教务API，详见https://github.com/Equim-chan/csu-ems-api
-    "api-link": "http://localhost:2333",
+    "api-host": "http://localhost:2333",
 
     // 查询间隔，单位为分钟
     "interval": 10,
 
-    // 查询时段，格式为"h:mm-h:mm"，如指定为空字符串，则全天都会查询。
+    // 查询时段，格式为"H:mm-H:mm"，如指定为空字符串，则全天都会查询。
     // 注意，在这个时段只是不查询，程序不会退出。
     // 例："6:00-10:00"  //合法
     //     "22:30-01:30" //合法

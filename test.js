@@ -1,6 +1,7 @@
 'use strict';
 
-var superagent = require('superagent'),
+const
+    superagent = require('superagent'),
     nodemailer = require('nodemailer'),
     colors     = require('colors'),
     program    = require('commander');
@@ -9,9 +10,10 @@ program
     .option('-c, --config [path]')
     .parse(process.argv);
 
-const config  = require(program.config || './config'),
-      api     = config['api-link'],
-      account = config.account;
+const
+    config  = require(program.config || './config'),
+    api     = config['api-host'],
+    account = config.account;
       
 var transporter = nodemailer.createTransport(config['sender-options']),
     mailOptions = config['mail-options'];
@@ -22,6 +24,7 @@ mailOptions.subject = 'csu-ems-notify测试结果';
 
 var start = new Date();
 console.log(`    (0ms) Testing csu-ems-api... (url: ${api})`.cyan);
+
 superagent
     .get(api + '/grades')
     .query({ id: account.id, pwd: account.password })
