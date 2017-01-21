@@ -48,15 +48,15 @@ const
         let v = n % 100;
         return n + (s[(v - 20) % 10] || s[v] || s[0]);
     },
-    // (object)  config   -> 导入config
-    // (string)  api      -> API链接
-    // (number)  interval -> 查询间隔
-    // (object)  period   -> 查询时段
-    // (boolean) makeUp   -> 是否考虑补考
-    // (number)  limit    -> 查询次数
-    // (boolean) endless  -> 无尽模式(?
-    // (boolean) details  -> 邮件中是否包含详情
-    // (object)  account  -> 查询的账号
+    // {object}  config   -> 导入config
+    // {string}  api      -> API链接
+    // {number}  interval -> 查询间隔
+    // {object}  period   -> 查询时段
+    // {boolean} makeUp   -> 是否考虑补考
+    // {number}  limit    -> 查询次数
+    // {boolean} endless  -> 无尽模式(?
+    // {boolean} details  -> 邮件中是否包含详情
+    // {object}  account  -> 查询的账号
     config   = require(program.config || './config'),
     api      = config['api-host'],
     interval = config.interval,
@@ -77,14 +77,16 @@ const
     details = config.details,
     account = config.account;
 
-    // (object) transporter -> 发件人信息
-    // (object) mailOptions -> 邮件信息
-    // (object) last        -> 上一次查询的结果
-    // (number) count       -> 当前查询次数
+    // {object} transporter -> 发件人信息
+    // {object} mailOptions -> 邮件信息
+    // {object} last        -> 上一次查询的结果
+    // {number} count       -> 当前查询次数
+    // {object} code        -> 用于clearInterval
 var transporter = nodemailer.createTransport(config['sender-options']),
     mailOptions = config['mail-options'],
     last,
-    count = 0;
+    count = 0,
+    code;
 
 const task = () => {
     if (period && !period.inPeriod()) {
@@ -172,13 +174,9 @@ const task = () => {
 
             mailOptions.html +=
                 (details ? '</ul><br>---------------------------------------------------------------------<br>' : '') + 
-                '详情可前往' + 
-                '<a href="http://csujwc.its.csu.edu.cn/">中南大学本科教务管理系统</a>进行查询<br>' +
-                `由${require('os').hostname()}检测于${moment().format('YYYY年M月D日H时m分s秒SSS毫秒')}，` +
-                `第${count}次检测<br>` +
-                '<a href="https://github.com/Equim-chan/">' +
-                    '<img src="https://s26.postimg.org/6778clcah/signature_white_cut.jpg" alt="Equim"/>' +
-                '</a>';
+                '详情可前往<a href="http://csujwc.its.csu.edu.cn/">中南大学本科教务管理系统</a>进行查询<br>' +
+                `由${require('os').hostname()}检测于${moment().format('YYYY年M月D日H时m分s秒SSS毫秒')}，第${count}次检测<br>` +
+                '<a href="https://github.com/Equim-chan/"><img src="https://s26.postimg.org/6778clcah/signature_white_cut.jpg" alt="Equim"/></a>';
 
             console.log(`${timeStamp()} Found `.green +
                 newCount.toString().yellow +
@@ -196,7 +194,7 @@ const task = () => {
         });
 };
 
-const code = setInterval(task, 60000 * interval);
+code = setInterval(task, 60000 * interval);
 
 console.log(`${timeStamp()} The monitor service has been launched, with an interval of `.green +
     interval.toString().yellow + ' mins, in period: '.green +
