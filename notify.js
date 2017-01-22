@@ -42,7 +42,7 @@ Examples:
 }
 
 const
-    timeStamp = () => moment().format('[[]YY-MM-DD HH:mm:ss[]]'),
+    logging = log => console.log(`${moment().format('[[]YY-MM-DD HH:mm:ss[]]')} ${log}`),
     getOrdinal = (n) => {
         const s = ["th", "st", "nd", "rd"];
         let v = n % 100;
@@ -92,8 +92,7 @@ const task = () => {
     if (period && !period.inPeriod()) {
         return;
     }
-    console.log(`${timeStamp()} Fetching for the `.cyan +
-        getOrdinal(++count).yellow + ' time.'.cyan);
+    logging('Fetching for the '.cyan + getOrdinal(++count).yellow + ' time.'.cyan);
     // 这种退出方法暂时还没测试过，不知道下面的回调会不会对其造成影响
     if (count === limit) {
         clearInterval(code);
@@ -105,14 +104,14 @@ const task = () => {
         .end(function (err, res) {
             // 无法使用API
             if (err) {
-                console.log(`${timeStamp()} Failed to access the API through ${api}\n${err.stack}`.red);
+                logging(`Failed to access the API through ${api}\n${err.stack}`.red);
                 return;
             }
 
             var fresh = JSON.parse(res.text);
             // 能使用API，但查询失败
             if (fresh.error) {
-                console.log(`${timeStamp()} Failed to query, reason: ${fresh.error}`.red);
+                logging(`Failed to query, reason: ${fresh.error}`.red);
                 return;
             }
 
@@ -123,7 +122,7 @@ const task = () => {
             // 注意：对于补考更新成绩的支持仅限于补考成绩高于初考成绩的情况
             if (fresh['subject-count'] <= last['subject-count']) {
                 if (!makeUp || _.isEqual(fresh, last)) {
-                    console.log(`${timeStamp()} Found no new grades.`);
+                    logging('Found no new grades.');
                     return;
                 }
             }
@@ -178,17 +177,17 @@ const task = () => {
                 `由${require('os').hostname()}检测于${moment().format('YYYY年M月D日H时m分s秒SSS毫秒')}，第${count}次检测<br>` +
                 '<a href="https://github.com/Equim-chan/"><img src="https://s26.postimg.org/6778clcah/signature_white_cut.jpg" alt="Equim"/></a>';
 
-            console.log(`${timeStamp()} Found `.green +
+            logging('Found '.green +
                 newCount.toString().yellow +
-                ` new grades! Now sending the mail to `.green + 
+                ' new grades! Now sending the mail to '.green + 
                 mailOptions.to.yellow);
 
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
-                    console.log(`${timeStamp()} Failed to send the mail.\n${error.stack}`.red);
+                    logging(`Failed to send the mail.\n${error.stack}`.red);
                     return;
                 }
-                console.log(`${timeStamp()} The notifiction mail was sent: ${info.response}`.green);
+                logging(`The notifiction mail was sent: ${info.response}`.green);
             });
             last = fresh;
         });
@@ -196,7 +195,7 @@ const task = () => {
 
 code = setInterval(task, 60000 * interval);
 
-console.log(`${timeStamp()} The monitor service has been launched, with an interval of `.green +
+logging('The monitor service has been launched, with an interval of '.green +
     interval.toString().yellow + ' mins, in period: '.green +
     (config.period || '24 hours').yellow);
 // 启动后立即查询一次
