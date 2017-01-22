@@ -42,7 +42,7 @@ Examples:
 }
 
 const
-    logging = log => console.log(`${moment().format('[[]YY-MM-DD HH:mm:ss[]]')} ${log}`),
+    logging = (log) => console.log(`${moment().format('[[]YY-MM-DD HH:mm:ss[]]')} ${log}`),
     getOrdinal = (n) => {
         const s = ["th", "st", "nd", "rd"];
         let v = n % 100;
