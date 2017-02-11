@@ -41,58 +41,77 @@ Examples:
     process.exit(0);
 }
 
-const
-    logging = (log) => console.log(`${moment().format('[[]YY-MM-DD HH:mm:ss[]]')} ${log}`),
-    getOrdinal = (n) => {
-        const s = ["th", "st", "nd", "rd"];
-        let v = n % 100;
-        return n + (s[(v - 20) % 10] || s[v] || s[0]);
-    },
-    // {object}  config   -> 导入config
-    // {string}  api      -> API链接
-    // {number}  interval -> 查询间隔
-    // {object}  period   -> 查询时段
-    // {boolean} makeUp   -> 是否考虑补考
-    // {number}  limit    -> 查询次数
-    // {boolean} endless  -> 无尽模式(?
-    // {boolean} details  -> 邮件中是否包含详情
-    // {object}  account  -> 查询的账号
-    config   = require(program.config || './config'),
-    api      = config['api-host'],
-    interval = config.interval,
-    period   = config.period && {
-        range: config.period
-                .replace(/:/g, '')
-                .match(/\d{3,4}/g)
-                .map((p, i, c) => parseInt(p) + (i === 1 && parseInt(c[0]) >= p ? 2400 : 0)),
-        inPeriod() {
-            let now = parseInt(moment().format('Hmm'));
-            return this.range[0] <= now && now <= this.range[1] ||
-                   this.range[0] <= now + 2400 && now + 2400 <= this.range[1];
-        }
-    },
-    makeUp  = config['make-up'],
-    limit   = config.limit,
-    endless = config.endless,
-    details = config.details,
-    account = config.account;
 
-    // {object} transporter -> 发件人信息
-    // {object} mailOptions -> 邮件信息
-    // {object} last        -> 上一次查询的结果
-    // {number} count       -> 当前查询次数
-    // {object} code        -> 用于clearInterval
-var transporter = nodemailer.createTransport(config['sender-options']),
-    mailOptions = config['mail-options'],
-    last,
-    count = 0,
-    code;
+// {object} 导入config
+const config = require(program.config || './config');
+
+// {string} API链接
+const api = config['api-host'];
+
+// {number} 查询间隔
+const interval = config.interval;
+
+// {object} 查询时段
+const period = config.period && {
+    range: config.period
+               .replace(/:/g, '')
+               .match(/\d{3,4}/g)
+               .map((p, i, c) => parseInt(p) + (i === 1 && parseInt(c[0]) >= p ? 2400 : 0)),
+    inPeriod() {
+        const now = parseInt(moment().format('Hmm'));
+        return this.range[0] <= now && now <= this.range[1] ||
+               this.range[0] <= now + 2400 && now + 2400 <= this.range[1];
+    }
+};
+
+// {boolean} 是否考虑补考
+const makeUp = config['make-up'];
+
+// {number} 查询次数
+const limit = config.limit;
+
+// {boolean} 无尽模式(?
+const endless = config.endless;
+
+// {boolean} 邮件中是否包含详情
+const details = config.details;
+
+// {object} 查询的账号
+const account = config.account;
+
+
+// {object} 发件人信息
+var transporter = nodemailer.createTransport(config['sender-options']);
+
+// {object} 邮件信息
+var mailOptions = config['mail-options'];
+
+// {object} 上一次查询的结果
+var last;
+
+// {number} 当前查询次数
+var count = 0;
+
+// {object} 用于clearInterval
+var code;
+
+
+const logging = (log) => console.log(`${moment().format('[[]YY-MM-DD HH:mm:ss[]]')} ${log}`);
+
+// 计算序数词
+const getOrdinal = (n) => {
+    const s = ['th', 'st', 'nd', 'rd'];
+    let v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
 
 const task = () => {
     if (period && !period.inPeriod()) {
         return;
     }
+
     logging('Fetching for the '.cyan + getOrdinal(++count).yellow + ' time.'.cyan);
+
     // 这种退出方法暂时还没测试过，不知道下面的回调会不会对其造成影响
     if (count === limit) {
         clearInterval(code);
@@ -185,10 +204,11 @@ const task = () => {
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                     logging(`Failed to send the mail.\n${error.stack}`.red);
-                    return;
+                } else {
+                    logging(`The notifiction mail was sent: ${info.response}`.green);
                 }
-                logging(`The notifiction mail was sent: ${info.response}`.green);
             });
+
             last = fresh;
         });
 };
@@ -198,5 +218,6 @@ code = setInterval(task, 60000 * interval);
 logging('The monitor service has been launched, with an interval of '.green +
     interval.toString().yellow + ' mins, in period: '.green +
     (config.period || '24 hours').yellow);
+
 // 启动后立即查询一次
 task();
