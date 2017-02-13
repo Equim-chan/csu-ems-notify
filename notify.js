@@ -46,7 +46,7 @@ Examples:
 const config = require(program.config || './config');
 
 // {string} API链接
-const api = config['api-host'];
+const api = require('path').join(config['api-host'], '/g');
 
 // {number} 查询间隔
 const interval = config.interval;
@@ -118,7 +118,7 @@ const task = () => {
     }
 
     superagent
-        .get(api + '/g')
+        .get(api)
         .query({ id: account.id, pwd: account.password })
         .end(function (err, res) {
             // 无法使用API

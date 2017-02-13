@@ -11,7 +11,7 @@ program
     .parse(process.argv);
 
 const config = require(program.config || './config');
-const api = config['api-host'];
+const api = require('path').join(config['api-host'], '/g');
 const account = config.account;
 
 var transporter = nodemailer.createTransport(config['sender-options']);
@@ -25,7 +25,7 @@ var start = new Date();
 console.log(`    (0ms) Testing csu-ems-api... (url: ${api})`.cyan);
 
 superagent
-    .get(api + '/grades')
+    .get(api)
     .query({ id: account.id, pwd: account.password })
     .end(function (err, res) {
         if (err) {
