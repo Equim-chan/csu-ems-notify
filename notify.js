@@ -15,7 +15,7 @@ const
 
 program
     .option('-h, --help')
-    .option('-v, --version')
+    .option('-V, --version')
     .option('-c, --config [path]')
     .parse(process.argv);
 
@@ -33,7 +33,7 @@ Usage:
 
 Options:
   -h, --help              print this message and exit.
-  -v, --version           print the version and exit.
+  -V, --version           print the version and exit.
   -c, --config [path]     specify the config file.
 
 Examples:
@@ -169,7 +169,7 @@ const task = () => {
                             `${(key in fresh.failed) ?
                                 '<li><span style="color:red;font-weight:bold">[挂]</span>' :
                                 '<li><span style="color:green;font-weight:bold">[过]</span>'}` +
-                            ` <u> ${key} </u> 分数为 <u> ${current.overall} </u>`;
+                            ` <u>${key}</u> 分数为 <u>${current.overall}</u>`;
 
                         if (!isNaN(current.reg) && !isNaN(current.exam) && !isNaN(current.overall)) {
                             // 计算平时分、考试分权重
